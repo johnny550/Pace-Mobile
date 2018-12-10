@@ -16,7 +16,7 @@ export const store = new Vuex.Store({
     } */
 
     state:{
-      message: 'Hello, this is vueX',
+      message: 'vueX toDo',
       user: null,
       loading: false,
       error: null
@@ -77,6 +77,15 @@ export const store = new Vuex.Store({
                     console.log(error)
                 }
             )
+        },
+
+        autoSignIn({commit}, payload){
+            commit('setUser', {id: payload.uid })
+        },
+
+        logout({commit}){
+            firebase.auth().signOut();
+            commit('setUser', null)
         },
 
         clearError({commit}){

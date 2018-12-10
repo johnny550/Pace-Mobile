@@ -3,6 +3,9 @@ import Router from 'vue-router'
 import login from '../components/Login.vue'
 import register from '../components/signUp.vue'
 import about from '../components/About.vue'
+import dashboard from '../components/Dashboard.vue'
+import askToken from '../components/SecondStepIDentification.vue'
+import AuthGuard from './AuthGuard'
 
 Vue.use(Router)
 
@@ -22,14 +25,22 @@ export default new Router({
   {
       path: '/about',
       name: 'About',
-      component: about
+      component: about,
+      beforeEnter: AuthGuard
   
-  }/*,
+  },
   {
-      path: '/contact',
-      name: 'Contact',
-      component: Contact
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: dashboard,
+      beforeEnter: AuthGuard
   
-  } */
+  },
+  {
+    path: '/tokenAsk',
+    name: 'tokenAsk',
+    component:askToken,
+    beforeEnter: AuthGuard
+  }
   ]
 })

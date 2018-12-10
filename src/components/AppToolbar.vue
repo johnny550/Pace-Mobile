@@ -13,6 +13,14 @@
         <v-list-tile-content>{{item.title}}</v-list-tile-content>
       </v-list-tile>
 
+      <v-list-tile v-if="userIsAuthenticated" @click="onLogout">
+        <v-list-tile-action>
+          <v-icon >logout</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>Logout</v-list-tile-content>
+      </v-list-tile>
+
+
     </v-list>
   </v-navigation-drawer>
     </div>
@@ -28,7 +36,9 @@
           <v-icon left>{{item.icon}}</v-icon>
           {{item.title}}</v-btn>
 
-       
+          <v-btn v-if="userIsAuthenticated" flat @click="onLogout">
+          <v-icon left>logout</v-icon>
+          Logout</v-btn>
       </v-toolbar-items>
     </v-toolbar>
   </div>
@@ -41,6 +51,12 @@
         sideNav:  false
       }
     },
+    methods:{
+      onLogout(){
+        this.$store.dispatch('logout')
+        this.$router.push('/')
+      }
+    },
     computed:{
       menuItems(){
         let menuItems = [
@@ -49,8 +65,9 @@
           ]
           if (this.userIsAuthenticated){
             menuItems =  [
-          {icon: 'contacts',title: 'Contact',link: '/contact'},
-          {icon: 'question_answer',title: 'About',link: '/about'}
+          {icon: 'contacts',title: 'Dashboard',link: '/dashboard'},
+          {icon: 'question_answer',title: 'About',link: '/about'},
+         // {icon: 'logout',title: 'Logout',link: '/logout'},
         ]
           }
 

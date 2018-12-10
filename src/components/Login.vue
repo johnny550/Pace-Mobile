@@ -57,11 +57,6 @@
 
 
 <script>
-//import store from './store/myStore.js' 
-
-
-
-
 export default {
    // store: store,
     data(){
@@ -92,7 +87,7 @@ export default {
         user (value) {
             if (value !==null && value!==undefined){
                 //after a successfull sign in, get redirected to :/
-                this.$router.push('/about')
+                this.$router.push('/tokenAsk')
             }
         }
     },
