@@ -6,6 +6,8 @@ import about from '../components/About.vue'
 import dashboard from '../components/Dashboard.vue'
 import askToken from '../components/SecondStepIDentification.vue'
 import AuthGuard from './AuthGuard'
+import reference from '../components/myNumber.vue'
+
 
 Vue.use(Router)
 
@@ -34,12 +36,17 @@ export default new Router({
       name: 'Dashboard',
       component: dashboard,
       beforeEnter: AuthGuard
-  
   },
   {
     path: '/tokenAsk',
     name: 'tokenAsk',
     component:askToken,
+    beforeEnter: AuthGuard
+  },
+  {
+    path: '/reference',
+    name: reference,
+    component: reference,
     beforeEnter: AuthGuard
   }
   ]

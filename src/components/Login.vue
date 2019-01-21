@@ -87,7 +87,7 @@ export default {
         user (value) {
             if (value !==null && value!==undefined){
                 //after a successfull sign in, get redirected to :/
-                this.$router.push('/tokenAsk')
+                this.$router.push('/dashboard')
             }
         }
     },

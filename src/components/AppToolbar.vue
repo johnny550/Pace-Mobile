@@ -66,8 +66,8 @@
           if (this.userIsAuthenticated){
             menuItems =  [
           {icon: 'contacts',title: 'Dashboard',link: '/dashboard'},
+          {icon: 'fingerprint',title: 'Reference',link: '/reference'},
           {icon: 'question_answer',title: 'About',link: '/about'},
-         // {icon: 'logout',title: 'Logout',link: '/logout'},
         ]
           }
 

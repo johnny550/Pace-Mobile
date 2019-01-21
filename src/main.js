@@ -7,11 +7,17 @@ import App from './App.vue'
 import router from './router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
-import * as firebase from 'firebase'
+import vueFire from 'vuefire'
+import firebaseC from './fireBaseConf/FirebaseConf'
 import { store } from './components/store/myStore.js'
 import Alert from './components/sharedComps/Alert.vue'
+import VeeValidate from 'vee-validate';
+
+Vue.use(VeeValidate);
+
 
 Vue.use(Vuetify)
+Vue.use(vueFire)
 Vue.config.productionTip = false
 Vue.component('app-alert', Alert)
 
@@ -23,13 +29,16 @@ new Vue({
   store,
   components: { App },
   template: '<App/>',
-  created(){
-    firebase.initializeApp({
-      apiKey: "AIzaSyCUH5KKc_obi_dh73A4HgQcibbxq41E6bY",
-      authDomain: "pace-data.firebaseapp.com",
-      databaseURL: "https://pace-data.firebaseio.com",
-      projectId: "pace-data",
-      storageBucket: "pace-data.appspot.com"
+  created() {
+    firebaseC
+    firebaseC.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch('autoSignIn', user)
+        this.$store.dispatch('fetchUserData')
+        //this.$store.dispatch('addUserToDB')
+      }
+
     })
   }
-})
+});
+
