@@ -1,6 +1,6 @@
 import * as firebaseC from 'firebase'
 let config = {
-    apiKey: "AIzaSyCUH5KKc_obi_dh73A4HgQcibbxq41E6bY",
+    apiKey: "XXXXXXXXXXXX",
     authDomain: "pace-data.firebaseapp.com",
     databaseURL: "https://pace-data.firebaseio.com",
     projectId: "pace-data",
