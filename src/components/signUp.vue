@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <h2>{{message}}</h2>
     <v-layout row v-if="error">
       <v-flex xs12 sm6 offset-sm3>
         <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
@@ -52,18 +51,19 @@
                       id="confirmPassword"
                       v-model="confirmPassword"
                       type="password"
+                      required
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
 
                 <v-layout row>
                   <v-flex xs12>
-                  <div class="alert alert-danger" v-show="errors.any()">
-                    <div v-if="errors.has('password')">{{ errors.first('password') }}</div>
-                    <div
-                      v-if="errors.has('confirmPassword')"
-                    >{{ errors.first('confirmPassword') }}</div>
-                  </div>
+                    <div class="alert alert-danger" v-show="errors.any()">
+                      <div v-if="errors.has('password')">{{ errors.first('password') }}</div>
+                      <div
+                        v-if="errors.has('confirmPassword')"
+                      >{{ errors.first('confirmPassword') }}</div>
+                    </div>
                   </v-flex>
                 </v-layout>
 
@@ -88,9 +88,6 @@
 
 
 <script>
-//import store from './store/myStore.js'
-//import { databaseReference } from "../firebaseConf/FirebaseConf.js";
-
 export default {
   // store: store,
   data() {
@@ -106,12 +103,6 @@ export default {
         ? "Passwords do not match"
         : true;
     },
-
-    message() {
-      //return store.state.message;
-      return this.$store.getters.message;
-    },
-
     user() {
       return this.$store.getters.user;
     },
@@ -128,6 +119,8 @@ export default {
     user(value) {
       if (value !== null && value !== undefined) {
         //after a successfull sign in, get redirected to :/
+        console.log("I'm watching")
+        this.$store.dispatch('addUserToDB')
         this.$router.push("/dashboard");
       }
     }
@@ -138,8 +131,7 @@ export default {
         email: this.email,
         password: this.password
       });
-
-      //this.$store.dispatch('addUserToDB')
+       //this.$store.dispatch('addUserToDB')
     },
     onDismissed() {
       this.$store.dispatch("clearError");

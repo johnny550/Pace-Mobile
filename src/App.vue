@@ -3,7 +3,7 @@
         <app-toolbar></app-toolbar>
             <router-view/>
          <!-- <app-footer style="position:absolute;z-index:-1"></app-footer>  -->
-         <app-footer style="position:relative;z-index:-1;"></app-footer> 
+         <app-footer></app-footer> 
     </div>
 </template>
 

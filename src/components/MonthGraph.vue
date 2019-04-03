@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <v-layout row>
-      <h2>{{message}}</h2>
       <v-flex>
         <v-card>
           <v-card-text>
@@ -31,25 +30,25 @@
             <v-container>
               <v-layout row align-center>
                 <div class="text-xs-center">
-                  <h1>Date:</h1>
-                  <h2>{{eldia}}</h2>
-                  <v-btn fab dark small color="primary" @click="setPointerToPrevious">
+                  <h1>Month:</h1>
+                  <h2>{{elmese}}</h2>
+                  <v-btn fab dark small color="primary" @click="setMonthPointerToPrevious">
                     <v-icon dark>remove</v-icon>
                   </v-btn>
 
-                  <v-btn fab dark small color="indigo" @click="setPointerToNext">
+                  <v-btn fab dark small color="indigo" @click="setMonthPointerToNext">
                     <v-icon dark>add</v-icon>
                   </v-btn>
                 </div>
                 <div
                   class="Chart"
                   style="position: relative; height:60vh; width:80vw"
-                  v-if="this.$store.getters.render"
+                  v-if="this.$store.getters.renderForMonth"
                 >
-                  <dash-graph></dash-graph>
+                  <month-graph></month-graph>
                 </div>
-                <div v-if="!this.$store.getters.render">
-                  <h1 style="position: relative; align: center">No data to display</h1>
+                <div v-if="!this.$store.getters.renderForMonth">
+                  <h1 style="position: relative; align: center">No data recorded for this month</h1>
                 </div>
               </v-layout>
             </v-container>
@@ -57,7 +56,6 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout row></v-layout>
   </v-container>
 </template>
 
@@ -69,63 +67,51 @@ export default {
     };
   },
   methods: {
-    setPointerToPrevious(value) {
-      var d = this.$store.getters.datePointer;
-      var theDate = d.substring(0, d.indexOf("/"));
-      var theMonth =
-        d.substring(d.indexOf("/"), d.lastIndexOf("/")).replace("/", "") - 1;
+    setMonthPointerToPrevious(value) {
+      var d = this.$store.getters.monthPointer;
+      var theMonth = d.substring(0, d.indexOf("/"));
       var theYear = d.substring(d.lastIndexOf("/")).replace("/", "");
-      var va = new Date(theYear, theMonth, theDate);
+      var va = new Date(theYear, theMonth);
 
       va.setDate(va.getDate() - 1);
 
-      var curr_date = va.getDate();
-      var curr_month = va.getMonth() + 1;
+      var curr_month = va.getMonth();
       var curr_year = va.getFullYear();
-      var myday = curr_date + "/" + curr_month + "/" + curr_year;
-      this.$store.commit("setDatePointer", myday);
-      console.log("after " + this.$store.getters.datePointer);
-      this.$store.dispatch("dataPerDay");
+      var myMonth = curr_month + "/" + curr_year;
+      this.$store.commit("setMonthPointer", myMonth);
+      //console.log("after " + this.$store.getters.monthPointer);
+      this.$store.dispatch("fetchUserData");
     },
-
-    setPointerToNext(value) {
-      var d = this.$store.getters.datePointer;
-      var theDate = d.substring(0, d.indexOf("/"));
-      var theMonth =
-        d.substring(d.indexOf("/"), d.lastIndexOf("/")).replace("/", "") - 1;
+    setMonthPointerToNext(value) {
+      var d = this.$store.getters.monthPointer;
+      var theMonth = d.substring(0, d.indexOf("/"));
       var theYear = d.substring(d.lastIndexOf("/")).replace("/", "");
-      var va = new Date(theYear, theMonth, theDate);
+      var va = new Date(theYear, theMonth);
 
       va.setDate(va.getDate() + 1);
 
-      var curr_date = va.getDate();
       var curr_month = va.getMonth() + 1;
       var curr_year = va.getFullYear();
-      var myday = curr_date + "/" + curr_month + "/" + curr_year;
-      this.$store.commit("setDatePointer", myday);
-      console.log("after plus" + this.$store.getters.datePointer);
-      this.$store.dispatch("dataPerDay");
+      var myday = curr_month + "/" + curr_year;
+      this.$store.commit("setMonthPointer", myday);
+      //console.log("after plus" + this.$store.getters.monthPointer);
+      this.$store.dispatch("fetchUserData");
     }
   },
   computed: {
-    message(){
-            return this.$store.getters.message;
-        },
     calItems() {
       let calItems = [
-        { icon: "calendar_today", title: "Day", link: "" },
+        { icon: "calendar_today", title: "Day", link: "/dashboard" },
         { icon: "date_range", title: "Month", link: "/graphM" },
         { icon: "calendar_view_day", title: "Year", link: "/graphY" }
       ];
-      //console.log("bef "+ this.$store.getters.datePointer)
       return calItems;
     },
-    eldia: {
+    elmese: {
       get() {
-        return this.$store.getters.datePointer;
+        return this.$store.getters.monthPointer;
       }
     }
   }
 };
 </script>
-

@@ -7,6 +7,8 @@ import dashboard from '../components/Dashboard.vue'
 import askToken from '../components/SecondStepIDentification.vue'
 import AuthGuard from './AuthGuard'
 import reference from '../components/myNumber.vue'
+import MonthlyChart from '../components/MonthGraph.vue'
+import YearChart from '../components/YearGraph.vue'
 
 
 Vue.use(Router)
@@ -45,8 +47,20 @@ export default new Router({
   },
   {
     path: '/reference',
-    name: reference,
+    name: 'reference',
     component: reference,
+    beforeEnter: AuthGuard
+  },
+  {
+    path: '/graphM',
+    name: 'monthly',
+    component: MonthlyChart,
+    beforeEnter: AuthGuard
+  },
+  {
+    path: '/graphY',
+    name: 'yearly',
+    component: YearChart,
     beforeEnter: AuthGuard
   }
   ]

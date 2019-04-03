@@ -1,4 +1,4 @@
-<template>
+<!--<template>
     <v-container>
         <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
@@ -39,9 +39,9 @@
         </v-layout>
     </v-container>
 </template>
-
+-->
 <script>
-import { databaseReference } from "../firebaseConf/FirebaseConf.js";
+/* import { databaseReference } from "../firebaseConf/FirebaseConf.js";
 export default {
   data() {
     return {
@@ -73,5 +73,5 @@ export default {
   firebase: {
     tokens: databaseReference.ref("Sensor data").child("idUser")
   }
-};
+}; */
 </script>
