@@ -100,7 +100,7 @@ const moduleA = {
             commit('setUser', { id: payload.uid })
         },
 
-        addUserToDB({ getters, commit }) {
+        addUserToDB({ getters }) {
             console.log("adding")
             firebase.database()
                 .ref('Users/' + getters.user.id + '')
@@ -111,6 +111,12 @@ const moduleA = {
                 .catch(error => {
                     console.log(error)
                 })
+        },
+        emptyMonthDataArrays({commit, getters}){
+            commit('setUserDataYAxis', [])
+          
+            commit('setUserDataXAxis', [])
+            console.log("contenu x:  "+getters.userDataXAxis+"  y: "+getters.userDataYAxis)
         },
 
         fetchUserData({ commit, getters }) {
@@ -124,21 +130,22 @@ const moduleA = {
                 .then(data => {
                     var dataArray = []
                     // var periodArray = []
-                    const values = data.val()
+                    //const values = data.val()
 
                     //top level in firebase
-                    var content = data.child('Values').forEach(function (childSnapshot) {
-                        var year = childSnapshot.key;
+                    data.child('Values').forEach(function (childSnapshot) {
+                       // var year = childSnapshot.key;
 
                         //month level in firebase
-                        var deeperContent = data.child('Values').child(theYear).forEach(function (childSnapshot) {
-                            var month = childSnapshot.key
-                            var months = ["January", "February", "March", "June", "July", "August", "September", "October", "November", "December"]
+                        data.child('Values').child(theYear).forEach(function (childSnapshot) {
+                           // var month = childSnapshot.key
+                            var months = ["January", "February", "March","April","May", "June", "July", "August", "September", "October", "November", "December"]
                             //var number = months.indexOf(theMonth) + 1;
                             var monthName = months[Number(theMonth) - 1];
-
+                            //console.log("Monthpointer now on: "+getters.monthPointer)
+                            //console.log("value in monthName: "+monthName)
                             //under the month node
-                            var evenDeeperContent = data.child('Values').child(theYear).child(monthName).forEach(function (childSnapshot) {
+                            data.child('Values').child(theYear).child(monthName).forEach(function (childSnapshot) {
 
                                 var day = childSnapshot.key
 
@@ -293,6 +300,11 @@ const moduleB = {
             today = dd + '/' + mm + '/' + yyyy
             commit('setDatePointer', today)
         },
+        emptyDayDataArrays({commit}){
+            commit('setUserData', [])
+          
+            commit('setTimestamps', [])
+        },
         dataPerDay({ commit, getters }) {
             console.log("per DAY")
             var dateToWorkWith = getters.datePointer
@@ -306,20 +318,20 @@ const moduleB = {
                 .then(data => {
                     var dataArray = []
                     // var periodArray = []
-                    const values = data.val()
+                    data.val()
 
                     //top level in firebase
-                    var content = data.child('Values').forEach(function (childSnapshot) {
+                    data.child('Values').forEach(function (childSnapshot) {
                         // var year = childSnapshot.key;
 
                         //month level in firebase
-                        var deeperContent = data.child('Values').child(y).forEach(function (childSnapshot) {
+                        data.child('Values').child(y).forEach(function (childSnapshot) {
                             // var month = childSnapshot.key
-                            var months = ["January", "February", "March", "June", "July", "August", "September", "October", "November", "December"]
+                            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                             var monthName = months[Number(mth) - 1];
 
                             //under the month node
-                            var evenDeeperContent = data.child('Values').child(y).child(monthName).forEach(function (childSnapshot) {
+                            data.child('Values').child(y).child(monthName).forEach(function (childSnapshot) {
 
                                 //var day = childSnapshot.key
 
@@ -427,9 +439,9 @@ const moduleC = {
                         //month level in firebase
                         var deeperContent = data.child('Values').child(yearToWorkWith).forEach(function (childSnapshot) {
                             var month = childSnapshot.key
-                            var months = ["January", "February", "March", "June", "July", "August", "September", "October", "November", "December"]
+                            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                             //var number = months.indexOf(theMonth) + 1;
-                            console.log("check    "+ month)
+                            console.log("check 1   "+ month)
                             //under the month node
                             var evenDeeperContent = data.child('Values').child(yearToWorkWith).child(month).forEach(function (childSnapshot) {
 
@@ -465,7 +477,7 @@ const moduleC = {
                     //const timeS = dataArray.map(x => x.timestamp)
                     // const valuesNeeded = dataArray.map(x => x.val)
 
-                    commit('setXAxisPerYear', days.unique())
+                    commit('setXAxisPerYear', days.reverse().unique())
                     // commit('setTimestamps', timeS)
 
                     /* put the average value for each day

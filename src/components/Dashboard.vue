@@ -70,6 +70,8 @@ export default {
   },
   methods: {
     setPointerToPrevious(value) {
+      //empty the X and Y axis data container located in the store
+      this.$store.dispatch("emptyDayDataArrays")
       var d = this.$store.getters.datePointer;
       var theDate = d.substring(0, d.indexOf("/"));
       var theMonth =
@@ -85,10 +87,13 @@ export default {
       var myday = curr_date + "/" + curr_month + "/" + curr_year;
       this.$store.commit("setDatePointer", myday);
       console.log("after " + this.$store.getters.datePointer);
+      this.$store.commit("setRender", false)
       this.$store.dispatch("dataPerDay");
     },
 
     setPointerToNext(value) {
+      //empty the X and Y axis data container located in the store
+      this.$store.dispatch("emptyDayDataArrays")
       var d = this.$store.getters.datePointer;
       var theDate = d.substring(0, d.indexOf("/"));
       var theMonth =
@@ -104,6 +109,7 @@ export default {
       var myday = curr_date + "/" + curr_month + "/" + curr_year;
       this.$store.commit("setDatePointer", myday);
       console.log("after plus" + this.$store.getters.datePointer);
+      this.$store.commit("setRender", false)
       this.$store.dispatch("dataPerDay");
     }
   },

@@ -68,6 +68,8 @@ export default {
   },
   methods: {
     setMonthPointerToPrevious(value) {
+      //empty the X and Y axis data container located in the store
+      this.$store.dispatch("emptyMonthDataArrays")
       var d = this.$store.getters.monthPointer;
       var theMonth = d.substring(0, d.indexOf("/"));
       var theYear = d.substring(d.lastIndexOf("/")).replace("/", "");
@@ -79,10 +81,14 @@ export default {
       var curr_year = va.getFullYear();
       var myMonth = curr_month + "/" + curr_year;
       this.$store.commit("setMonthPointer", myMonth);
+      this.$store.commit("setRenderForMonth", false)
       //console.log("after " + this.$store.getters.monthPointer);
-      this.$store.dispatch("fetchUserData");
+      this.$store.dispatch("fetchUserData")
+      console.log(this.$store.getters.monthPointer+"   contenu x:  "+this.$store.getters.userDataXAxis+"  y: "+this.$store.getters.userDataYAxis)
     },
     setMonthPointerToNext(value) {
+            //empty the X and Y axis data container located in the store
+      this.$store.dispatch("emptyMonthDataArrays")
       var d = this.$store.getters.monthPointer;
       var theMonth = d.substring(0, d.indexOf("/"));
       var theYear = d.substring(d.lastIndexOf("/")).replace("/", "");
@@ -95,7 +101,9 @@ export default {
       var myday = curr_month + "/" + curr_year;
       this.$store.commit("setMonthPointer", myday);
       //console.log("after plus" + this.$store.getters.monthPointer);
-      this.$store.dispatch("fetchUserData");
+      this.$store.commit("setRenderForMonth", false)
+      this.$store.dispatch("fetchUserData")
+      console.log(this.$store.getters.monthPointer+"   contenu x:  "+this.$store.getters.userDataXAxis+"  y: "+this.$store.getters.userDataYAxis)
     }
   },
   computed: {

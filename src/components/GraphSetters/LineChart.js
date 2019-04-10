@@ -79,7 +79,7 @@ export default ({
                     this.$store.commit('setRender', true)
             }
             else{
-                console.log("done")
+                console.log("no data")
                 this.$store.commit('setRender', false)
             }
 
@@ -100,6 +100,7 @@ export default ({
         this.gradient2.addColorStop(1, 'rgba(0, 231, 255, 0)')
         //this.averageNumbers
         //this.daysItems
+        console.log("mounted")
         this.renderLineChart()
         //added
         // this.$data._chart.update()
