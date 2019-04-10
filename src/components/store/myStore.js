@@ -508,7 +508,7 @@ const moduleC = {
                     const valuesNeeded = final.map(e => e.val);
 
 
-                    commit('setYAxisPerYear', valuesNeeded)
+                    commit('setYAxisPerYear', valuesNeeded.reverse())
                     commit('setLoading', false)
                     if (getters.xAxisPerYear.length > 0 && getters.yAxisPerYear.length > 0) {
                         commit('setRenderForYear', true)
