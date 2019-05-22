@@ -5,6 +5,11 @@
         <v-card>
           <v-card-text>
             <v-card height="100px" flat>
+              <div v-if="this.$store.getters.renderForYear">
+                <v-btn fab dark color="teal darken-1" @click="exportDataY">
+                  <v-icon dark>import_export</v-icon>
+                </v-btn>
+              </div>
               <v-bottom-nav :active.sync="bottomNav" :value="true" absolute color="transparent">
                 <v-list-tile v-for="item in calItems" :key="item.title" router :to="item.link">
                   <div class="ml-4 mr-4 caption">
@@ -23,7 +28,7 @@
 
             <v-container>
               <v-layout row align-center>
-                  <div class="text-xs-center">
+                <div class="text-xs-center">
                   <h1>Year:</h1>
                   <h2>{{elano}}</h2>
                   <v-btn fab dark small color="primary" @click="setYearPointerToPrevious">
@@ -41,7 +46,7 @@
                 >
                   <year-graph></year-graph>
                 </div>
-                 <div v-if="!this.$store.getters.renderForYear">
+                <div v-if="!this.$store.getters.renderForYear">
                   <h1 style="position: relative; align: center">No data recorded in this year</h1>
                 </div>
               </v-layout>
@@ -70,14 +75,24 @@ export default {
       ];
       return calItems;
     },
-        elano: {
+    elano: {
       get() {
         return this.$store.getters.yearPointer;
       }
     }
   },
   methods: {
-     setYearPointerToPrevious(value) {
+    exportDataY() {
+      let Canvas = document.getElementById("line-chart");
+      var imgData = Canvas.toDataURL("image/jpeg");
+      var pdf = new jsPDF("landscape");
+       pdf.setFontSize(22);
+      pdf.text(100,20,"User: "+this.$store.getters.email)
+      pdf.text(80, 40,"This data has been registered as abnormalities on "+this.$store.getters.yearPointer)
+      pdf.addImage(imgData, "JPEG", 5, 50, 300, 140, "al", "NONE", 0);
+      pdf.save("Data sum up _Year_.pdf");
+    },
+    setYearPointerToPrevious(value) {
       var theYear = this.$store.getters.yearPointer;
       var va = new Date();
 

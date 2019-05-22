@@ -5,7 +5,7 @@ export default ({
         return {
             xAxisM: [],
             yAxisM: [],
-            title: "Heart rates"
+            title: "Heart rates ("+this.$store.getters.monthPointer+")"
         }
     },
     computed: {

@@ -13,7 +13,8 @@ const moduleA = {
         userDataYAxis: [],
         userDataXAxis: [],
         renderForMonth: false,
-        monthPointer: null
+        monthPointer: null,
+        email: ''
     },
     mutations: {
         setUser(state, payload) {
@@ -39,6 +40,9 @@ const moduleA = {
         },
         setMonthPointer(state, payload) {
             state.monthPointer = payload
+        },
+        setEmail(state, payload){
+            state.email=payload
         }
     },
     actions: {
@@ -61,7 +65,7 @@ const moduleA = {
                         id: user.user.uid
                     }
                     commit('setUser', newUser)
-                    console.log("ajoutee  "+getters.user.id)
+                    commit('setEmail', payload.email)
 
                 }
             )
@@ -74,7 +78,7 @@ const moduleA = {
                 )
         },
 
-        signUserIn({ commit, getters }, payload) {
+        signUserIn({ commit }, payload) {
             commit('setLoading', true)
             commit('clearError')
             firebase.auth().signInWithEmailAndPassword(payload.email, payload.password).then(
@@ -99,18 +103,20 @@ const moduleA = {
         autoSignIn({ commit }, payload) {
             commit('setUser', { id: payload.uid })
         },
+        getEmail({commit, getters}){
+            firebase.database().ref('Users/' + getters.user.id + '').once('value')
+            .then(data => {
+                data.child("email").forEach(function (childSnapshot) {
+                    commit("setEmail", childSnapshot.val())
+                })
+            })
+        },
 
         addUserToDB({ getters }) {
             console.log("adding")
             firebase.database()
-                .ref('Users/' + getters.user.id + '')
-                .push(email)
-                .then(data => {
-                    //console.log(email)
-                })
-                .catch(error => {
-                    console.log(error)
-                })
+                .ref('Users/' + getters.user.id + '').set({"email": email})
+               
         },
         emptyMonthDataArrays({commit, getters}){
             commit('setUserDataYAxis', [])
@@ -264,6 +270,9 @@ const moduleA = {
         },
         message(state){
             return state.message
+        },
+        email(state){
+            return state.email
         }
     }
 }
@@ -323,23 +332,24 @@ const moduleB = {
                     //top level in firebase
                     data.child('Values').forEach(function (childSnapshot) {
                         // var year = childSnapshot.key;
-
+                        
                         //month level in firebase
-                        data.child('Values').child(y).forEach(function (childSnapshot) {
+                        data.child('Values').child(y).forEach(function () {
                             // var month = childSnapshot.key
                             var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                             var monthName = months[Number(mth) - 1];
-
+                            
                             //under the month node
-                            data.child('Values').child(y).child(monthName).forEach(function (childSnapshot) {
+                            data.child('Values').child(y).child(monthName).forEach(function () {
 
                                 //var day = childSnapshot.key
-
+                               // console.log("child snapshot:-------------: "+childSnapshot.val())
 
                                 data.child('Values').child(y).child(monthName).child(d).forEach(function (childSnapshot) {
                                     var timeStp = childSnapshot.key
                                     data.child('Values').child(y).child(monthName).child(d).child(timeStp).forEach(function (childSnapshot) {
                                         var childData = childSnapshot.val();
+                                        console.log("child data:-------------: "+timeStp)
                                         dataArray.push({
                                             //moment: day + "/" + number + "/" + year,
                                             timestamp: timeStp,
@@ -357,15 +367,20 @@ const moduleB = {
                     ** Must put those elements in an array and share it within the application scope (commit...)
                     ** array to share: days[]
                     */
+                   Array.prototype.unique = function () {
+                    return this.filter(function (value, index, self) {
+                        return self.indexOf(value) === index;
+                    });
+                };
 
                     const timeS = dataArray.map(x => x.timestamp)
                     const valuesNeeded = dataArray.map(x => x.val)
-                    //console.log("timestamps: " + timeS)
-                    //console.log("values:  " + valuesNeeded)
+                   
 
-                    commit('setTimestamps', timeS)
+                    commit('setTimestamps', timeS.unique())
                     commit('setUserData', valuesNeeded)
-
+                    console.log("timestamps: " + timeS)
+                    console.log("values:  " + valuesNeeded)
                     if (getters.timestamps.length > 0 && getters.userData.length > 0) {
                         commit('setRender', true)
                         console.log("rendering", getters.render)

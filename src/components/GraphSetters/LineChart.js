@@ -5,7 +5,7 @@ export default ({
         return {
             xAxis: [],
             yAxis: [],
-            title: "Heart rates"
+            title: "Heart rates ("+this.$store.getters.datePointer+")"
         }
     },
     computed: {
@@ -15,7 +15,6 @@ export default ({
             for (var i = 0; i < this.$store.getters.userData.length; i++) {
                 this.yAxis.push(this.$store.getters.userData[i])
                  console.log(' now: ', this.yAxis[i])
-
             }
         },
         daysItems: function () {
@@ -23,7 +22,6 @@ export default ({
            for (var i = 0; i < this.$store.getters.timestamps.length; i++) {
             this.xAxis.push(this.$store.getters.timestamps[i])
             console.log(' daysnow: ', this.xAxis[i])
-
         }
         }
     },
@@ -33,7 +31,7 @@ export default ({
             console.log('watch')
             // apply your logic here, e.g. invoke your listener function
             for (var i = 0; i < newValue.length; i++) {
-                this.yAxis.push(newValue[i])
+                //this.yAxis.push(newValue[i])
                  console.log(' now: ', this.yAxis[i])
 
             }
@@ -43,11 +41,11 @@ export default ({
         },*/
         daysItems: function (newVal) {
             for (var i = 0; i < newVal.length; i++) {
-                this.xAxis.push(newVal[i])
+                //this.xAxis.push(newVal[i])
                 console.log(' daysnow: ', this.xAxis[i])
 
             }
-        },
+        }
         /* xAxis :function (ol,ne){
              this.daysItems
          },*/
@@ -83,8 +81,7 @@ export default ({
                 this.$store.commit('setRender', false)
             }
 
-        }
-
+        },
     },
 
     mounted() {

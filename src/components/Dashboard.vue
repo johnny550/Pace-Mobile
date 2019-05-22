@@ -6,6 +6,11 @@
         <v-card>
           <v-card-text>
             <v-card height="100px" flat>
+              <div v-if="this.$store.getters.render">
+                <v-btn fab dark color="teal darken-1" @click="exportData">
+                  <v-icon dark>import_export</v-icon>
+                </v-btn>
+              </div>
               <v-bottom-nav :active.sync="bottomNav" :value="true" absolute color="transparent">
                 <v-list-tile v-for="item in calItems" :key="item.title" router :to="item.link">
                   <div class="ml-4 mr-4 caption">
@@ -20,12 +25,6 @@
                   </div>
                 </v-list-tile>
               </v-bottom-nav>
-              <!--work with these in case of a problem with the bottom nav-->
-              <!-- <div class="ml-4 mr-4 caption">
-                 <v-icon color="blue lighten-1" >calendar_today</v-icon>
-                 <v-icon @click="clickMethod" color="blue lighten-1" >date_range</v-icon>
-                 <v-icon color="blue lighten-1" >calendar_view_day</v-icon>
-              </div>-->
             </v-card>
 
             <v-container>
@@ -69,9 +68,19 @@ export default {
     };
   },
   methods: {
+    exportData() {
+      let Canvas = document.getElementById("line-chart");
+      var imgData = Canvas.toDataURL("image/jpeg");
+      var pdf = new jsPDF("landscape");
+       pdf.setFontSize(22);
+      pdf.text(100,20,"User: "+this.$store.getters.email)
+      pdf.text(80, 40,"This data has been registered as abnormalities on "+this.$store.getters.datePointer)
+      pdf.addImage(imgData, "JPEG", 5, 50, 300, 140, "al", "NONE", 0);
+      pdf.save("Data sum up _Day_.pdf");
+    },
     setPointerToPrevious(value) {
       //empty the X and Y axis data container located in the store
-      this.$store.dispatch("emptyDayDataArrays")
+      this.$store.dispatch("emptyDayDataArrays");
       var d = this.$store.getters.datePointer;
       var theDate = d.substring(0, d.indexOf("/"));
       var theMonth =
@@ -87,13 +96,13 @@ export default {
       var myday = curr_date + "/" + curr_month + "/" + curr_year;
       this.$store.commit("setDatePointer", myday);
       console.log("after " + this.$store.getters.datePointer);
-      this.$store.commit("setRender", false)
+      this.$store.commit("setRender", false);
       this.$store.dispatch("dataPerDay");
     },
 
     setPointerToNext(value) {
       //empty the X and Y axis data container located in the store
-      this.$store.dispatch("emptyDayDataArrays")
+      this.$store.dispatch("emptyDayDataArrays");
       var d = this.$store.getters.datePointer;
       var theDate = d.substring(0, d.indexOf("/"));
       var theMonth =
@@ -109,14 +118,14 @@ export default {
       var myday = curr_date + "/" + curr_month + "/" + curr_year;
       this.$store.commit("setDatePointer", myday);
       console.log("after plus" + this.$store.getters.datePointer);
-      this.$store.commit("setRender", false)
+      this.$store.commit("setRender", false);
       this.$store.dispatch("dataPerDay");
     }
   },
   computed: {
-    message(){
-            return this.$store.getters.message;
-        },
+    message() {
+      return this.$store.getters.message;
+    },
     calItems() {
       let calItems = [
         { icon: "calendar_today", title: "Day", link: "" },

@@ -5,6 +5,11 @@
         <v-card>
           <v-card-text>
             <v-card height="100px" flat>
+              <div v-if="this.$store.getters.renderForMonth">
+                <v-btn fab dark color="teal darken-1" @click="exportDataM">
+                  <v-icon dark>import_export</v-icon>
+                </v-btn>
+              </div>
               <v-bottom-nav :active.sync="bottomNav" :value="true" absolute color="transparent">
                 <v-list-tile v-for="item in calItems" :key="item.title" router :to="item.link">
                   <div class="ml-4 mr-4 caption">
@@ -67,9 +72,20 @@ export default {
     };
   },
   methods: {
+    exportDataM() {
+      let Canvas = document.getElementById("line-chart");
+      var imgData = Canvas.toDataURL("image/jpeg");
+      var pdf = new jsPDF("landscape");
+      //x then y
+      pdf.setFontSize(22);
+      pdf.text(100,20,"User: "+this.$store.getters.email)
+      pdf.text(80, 40,"This data has been registered as abnormalities in "+this.$store.getters.monthPointer)
+      pdf.addImage(imgData, "JPEG", 5, 50, 300, 140, "al", "NONE", 0);
+      pdf.save("Data sum up _Month_.pdf");
+    },
     setMonthPointerToPrevious(value) {
       //empty the X and Y axis data container located in the store
-      this.$store.dispatch("emptyMonthDataArrays")
+      this.$store.dispatch("emptyMonthDataArrays");
       var d = this.$store.getters.monthPointer;
       var theMonth = d.substring(0, d.indexOf("/"));
       var theYear = d.substring(d.lastIndexOf("/")).replace("/", "");
@@ -81,14 +97,20 @@ export default {
       var curr_year = va.getFullYear();
       var myMonth = curr_month + "/" + curr_year;
       this.$store.commit("setMonthPointer", myMonth);
-      this.$store.commit("setRenderForMonth", false)
+      this.$store.commit("setRenderForMonth", false);
       //console.log("after " + this.$store.getters.monthPointer);
-      this.$store.dispatch("fetchUserData")
-      console.log(this.$store.getters.monthPointer+"   contenu x:  "+this.$store.getters.userDataXAxis+"  y: "+this.$store.getters.userDataYAxis)
+      this.$store.dispatch("fetchUserData");
+      console.log(
+        this.$store.getters.monthPointer +
+          "   contenu x:  " +
+          this.$store.getters.userDataXAxis +
+          "  y: " +
+          this.$store.getters.userDataYAxis
+      );
     },
     setMonthPointerToNext(value) {
-            //empty the X and Y axis data container located in the store
-      this.$store.dispatch("emptyMonthDataArrays")
+      //empty the X and Y axis data container located in the store
+      this.$store.dispatch("emptyMonthDataArrays");
       var d = this.$store.getters.monthPointer;
       var theMonth = d.substring(0, d.indexOf("/"));
       var theYear = d.substring(d.lastIndexOf("/")).replace("/", "");
@@ -101,9 +123,15 @@ export default {
       var myday = curr_month + "/" + curr_year;
       this.$store.commit("setMonthPointer", myday);
       //console.log("after plus" + this.$store.getters.monthPointer);
-      this.$store.commit("setRenderForMonth", false)
-      this.$store.dispatch("fetchUserData")
-      console.log(this.$store.getters.monthPointer+"   contenu x:  "+this.$store.getters.userDataXAxis+"  y: "+this.$store.getters.userDataYAxis)
+      this.$store.commit("setRenderForMonth", false);
+      this.$store.dispatch("fetchUserData");
+      console.log(
+        this.$store.getters.monthPointer +
+          "   contenu x:  " +
+          this.$store.getters.userDataXAxis +
+          "  y: " +
+          this.$store.getters.userDataYAxis
+      );
     }
   },
   computed: {

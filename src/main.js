@@ -48,6 +48,8 @@ new Vue({
         this.$store.dispatch('dataPerDay')
         this.$store.dispatch('fetchUserData')
         this.$store.dispatch('getYearData')
+        
+      this.$store.dispatch("getEmail")
        
       }
 
