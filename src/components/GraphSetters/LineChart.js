@@ -14,14 +14,14 @@ export default ({
              
             for (var i = 0; i < this.$store.getters.userData.length; i++) {
                 this.yAxis.push(this.$store.getters.userData[i])
-                 console.log(' now: ', this.yAxis[i])
+                // console.log(' now: ', this.yAxis[i])
             }
         },
         daysItems: function () {
            // return this.$store.getters.timestamps
            for (var i = 0; i < this.$store.getters.timestamps.length; i++) {
             this.xAxis.push(this.$store.getters.timestamps[i])
-            console.log(' daysnow: ', this.xAxis[i])
+            //console.log(' daysnow: ', this.xAxis[i])
         }
         }
     },
@@ -32,7 +32,7 @@ export default ({
             // apply your logic here, e.g. invoke your listener function
             for (var i = 0; i < newValue.length; i++) {
                 //this.yAxis.push(newValue[i])
-                 console.log(' now: ', this.yAxis[i])
+                // console.log(' now: ', this.yAxis[i])
 
             }
         },
@@ -42,7 +42,7 @@ export default ({
         daysItems: function (newVal) {
             for (var i = 0; i < newVal.length; i++) {
                 //this.xAxis.push(newVal[i])
-                console.log(' daysnow: ', this.xAxis[i])
+                //console.log(' daysnow: ', this.xAxis[i])
 
             }
         }

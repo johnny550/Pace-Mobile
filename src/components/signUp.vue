@@ -120,6 +120,7 @@ export default {
       if (value !== null && value !== undefined) {
         //after a successfull sign in, get redirected to :/
         console.log("I'm watching")
+           this.$store.dispatch("sendVerification")
         this.$store.dispatch('addUserToDB')
         this.$router.push("/dashboard");
       }
@@ -131,6 +132,7 @@ export default {
         email: this.email,
         password: this.password
       });
+   
        //this.$store.dispatch('addUserToDB')
     },
     onDismissed() {

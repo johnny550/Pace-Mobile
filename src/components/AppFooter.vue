@@ -3,9 +3,9 @@
     <v-footer height="auto">
       <v-card class="flex" flat tile>
         <v-card-title class="light-blue accent-2">
-          <strong class="subheading">Follow us!</strong>
+          <strong class="subheading">Mail contact!</strong>
 
-          <v-btn v-for="icon in icons" :key="icon" class="mx-3" dark icon>
+          <v-btn  class="mx-3" dark icon>
             <v-icon size="24px">{{ icon }}</v-icon>
           </v-btn>
         </v-card-title>
@@ -21,7 +21,7 @@
 <script>
 export default {
   data: () => ({
-    icons: ["facebook", "twitter_box", "google_plus", "instagram", "fab fa-linkedin"]
+    icon: "contact_mail"
   })
 };
 </script>

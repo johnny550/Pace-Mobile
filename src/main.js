@@ -9,7 +9,7 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vueFire from 'vuefire'
 import firebaseC from './fireBaseConf/FirebaseConf'
-import { store } from './components/store/myStore.js'
+import { store } from './components/store/myStore'
 import Alert from './components/sharedComps/Alert.vue'
 import VeeValidate from 'vee-validate';
 import dashGraph from './components/GraphSetters/DashboardGraph.vue'

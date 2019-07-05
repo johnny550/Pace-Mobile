@@ -14,7 +14,8 @@ const moduleA = {
         userDataXAxis: [],
         renderForMonth: false,
         monthPointer: null,
-        email: ''
+        email: '',
+        emailVerified: false
     },
     mutations: {
         setUser(state, payload) {
@@ -41,8 +42,11 @@ const moduleA = {
         setMonthPointer(state, payload) {
             state.monthPointer = payload
         },
-        setEmail(state, payload){
-            state.email=payload
+        setEmail(state, payload) {
+            state.email = payload
+        },
+        setEmailVerified(state, payload) {
+            state.emailVerified = payload
         }
     },
     actions: {
@@ -55,7 +59,7 @@ const moduleA = {
             var myMonth = mm + '/' + yyyy
             commit('setMonthPointer', myMonth)
         },
-        signUserUp({ commit,getters }, payload) {
+        signUserUp({ commit, getters }, payload) {
             commit('setLoading', true)
             commit('clearError')
             firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password).then(
@@ -77,6 +81,15 @@ const moduleA = {
                     }
                 )
         },
+        sendVerification() {
+            var user = firebase.auth().currentUser
+            user.sendEmailVerification().then(function () {
+                //email is sent
+                window.alert("Verification sent")
+            }).catch(function (error) {
+                console.log("message" + error.message)
+            })
+        },
 
         signUserIn({ commit }, payload) {
             commit('setLoading', true)
@@ -89,6 +102,8 @@ const moduleA = {
                         id: user.user.uid,
                     }
                     commit('setUser', newUser)
+                    //console.log("Email verified: "+newUser.emailVerified)
+
                 }
             )
                 .catch(
@@ -98,31 +113,33 @@ const moduleA = {
                         console.log(error)
                     }
                 )
+            //var user =firebase.auth().currentUser
+
         },
 
         autoSignIn({ commit }, payload) {
             commit('setUser', { id: payload.uid })
         },
-        getEmail({commit, getters}){
+        getEmail({ commit, getters }) {
             firebase.database().ref('Users/' + getters.user.id + '').once('value')
-            .then(data => {
-                data.child("email").forEach(function (childSnapshot) {
-                    commit("setEmail", childSnapshot.val())
+                .then(data => {
+                    data.child("email").forEach(function (childSnapshot) {
+                        commit("setEmail", childSnapshot.val())
+                    })
                 })
-            })
         },
 
         addUserToDB({ getters }) {
             console.log("adding")
             firebase.database()
-                .ref('Users/' + getters.user.id + '').set({"email": email})
-               
+                .ref('Users/' + getters.user.id + '').set({ "email": email })
+
         },
-        emptyMonthDataArrays({commit, getters}){
+        emptyMonthDataArrays({ commit, getters }) {
             commit('setUserDataYAxis', [])
-          
+
             commit('setUserDataXAxis', [])
-            console.log("contenu x:  "+getters.userDataXAxis+"  y: "+getters.userDataYAxis)
+            console.log("contenu x:  " + getters.userDataXAxis + "  y: " + getters.userDataYAxis)
         },
 
         fetchUserData({ commit, getters }) {
@@ -140,12 +157,12 @@ const moduleA = {
 
                     //top level in firebase
                     data.child('Values').forEach(function (childSnapshot) {
-                       // var year = childSnapshot.key;
+                        // var year = childSnapshot.key;
 
                         //month level in firebase
                         data.child('Values').child(theYear).forEach(function (childSnapshot) {
-                           // var month = childSnapshot.key
-                            var months = ["January", "February", "March","April","May", "June", "July", "August", "September", "October", "November", "December"]
+                            // var month = childSnapshot.key
+                            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                             //var number = months.indexOf(theMonth) + 1;
                             var monthName = months[Number(theMonth) - 1];
                             //console.log("Monthpointer now on: "+getters.monthPointer)
@@ -181,40 +198,55 @@ const moduleA = {
                             return self.indexOf(value) === index;
                         });
                     };
-                    const days = dataArray.map(x => x.moment)
-                    //const timeS = dataArray.map(x => x.timestamp)
-                    // const valuesNeeded = dataArray.map(x => x.val)
 
-                    commit('setUserDataXAxis', days.unique())
-                    // commit('setTimestamps', timeS)
-
-                    /* put the average value for each day
+                     /* put the average value for each day
                     ** array to share : final[] instead of dataArray
                     */
-                    let output = dataArray.reduce((op, cur) => {
-                        if (op[cur.moment]) {
-                            op[cur.moment].val += cur.val;
-                            op[cur.moment].count++;
-                        } else {
-                            op[cur.moment] = cur
-                            op[cur.moment].count = 1;
-                        }
-                        return op;
-                    }, {})
+                   let output = dataArray.reduce((op, cur) => {
+                    if (op[cur.moment]) {
+                        op[cur.moment].val += cur.val;
+                        op[cur.moment].count++;
+                    } else {
+                        op[cur.moment] = cur
+                        op[cur.moment].count = 1;
+                    }
+                    return op;
+                }, {})
 
-                    let final = Object.values(output).map(e => {
-                        return {
-                            //moment: e.moment,
-                            val: e.val / e.count
-                        }
-                    })
+                let final = Object.values(output).map(e => {
+                    return {
+                        moment: e.moment,
+                        val: e.val / e.count
+                    }
+                })
+                    for (var i = 0; i < final.length; i++) {
+                        var day = final[i].moment.substring(0, final[i].moment.indexOf("/"))
+                        var month = (final[i].moment.substring(final[i].moment.indexOf("/"), final[i].moment.lastIndexOf("/")).replace("/", "")) - 1
+                        var year = final[i].moment.substring(final[i].moment.lastIndexOf("/")).replace("/", "")
+                        var myDate = new Date(year, month, day)
+                        final[i].moment = myDate
+                    }
+                    var date_sort = function (date1, date2) {
+                        return date1.moment - date2.moment
+                    };
+
+                    final.sort(date_sort)
+                    for (var i = 0; i < final.length; i++) {
+                        final[i].moment = final[i].moment.toString().substring(0, 15)
+                        //console.log(final[i].moment)
+                    }
+                   
 
                     /* console.log(final)
                      final.forEach(function(y){
                        console.log("day: "+y.moment+"  value: "+y.val)
                      })*/
                     const valuesNeeded = final.map(e => e.val);
+                    const days = final.map(x => x.moment)
+                    //const timeS = dataArray.map(x => x.timestamp)
+                    // const valuesNeeded = dataArray.map(x => x.val)
 
+                    commit('setUserDataXAxis', days.unique())
 
                     commit('setUserDataYAxis', valuesNeeded)
                     commit('setLoading', false)
@@ -240,6 +272,7 @@ const moduleA = {
             commit('setMonthPointer', false)
             commit('setYearPointer', false)
             commit('setRenderForYear', false)
+            commit('setEmailVerified', false)
         },
 
         clearError({ commit }) {
@@ -268,11 +301,14 @@ const moduleA = {
         monthPointer(state) {
             return state.monthPointer
         },
-        message(state){
+        message(state) {
             return state.message
         },
-        email(state){
+        email(state) {
             return state.email
+        },
+        emailVerified(state) {
+            return state.emailVerified
         }
     }
 }
@@ -309,9 +345,9 @@ const moduleB = {
             today = dd + '/' + mm + '/' + yyyy
             commit('setDatePointer', today)
         },
-        emptyDayDataArrays({commit}){
+        emptyDayDataArrays({ commit }) {
             commit('setUserData', [])
-          
+
             commit('setTimestamps', [])
         },
         dataPerDay({ commit, getters }) {
@@ -332,29 +368,26 @@ const moduleB = {
                     //top level in firebase
                     data.child('Values').forEach(function (childSnapshot) {
                         // var year = childSnapshot.key;
-                        
+
                         //month level in firebase
                         data.child('Values').child(y).forEach(function () {
                             // var month = childSnapshot.key
                             var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                             var monthName = months[Number(mth) - 1];
-                            
+
                             //under the month node
                             data.child('Values').child(y).child(monthName).forEach(function () {
 
-                                //var day = childSnapshot.key
-                               // console.log("child snapshot:-------------: "+childSnapshot.val())
 
                                 data.child('Values').child(y).child(monthName).child(d).forEach(function (childSnapshot) {
                                     var timeStp = childSnapshot.key
                                     data.child('Values').child(y).child(monthName).child(d).child(timeStp).forEach(function (childSnapshot) {
                                         var childData = childSnapshot.val();
-                                        console.log("child data:-------------: "+timeStp)
                                         dataArray.push({
-                                            //moment: day + "/" + number + "/" + year,
                                             timestamp: timeStp,
                                             val: childData
                                         })
+
                                     })
 
                                 })
@@ -367,23 +400,51 @@ const moduleB = {
                     ** Must put those elements in an array and share it within the application scope (commit...)
                     ** array to share: days[]
                     */
-                   Array.prototype.unique = function () {
-                    return this.filter(function (value, index, self) {
-                        return self.indexOf(value) === index;
-                    });
-                };
+                    Array.prototype.unique = function () {
+                        return this.filter(function (value, index, self) {
+                            return self.indexOf(value) === index;
+                        });
+                    };
+                    dataArray.sort(function naturalCompare(a, b) {
+                        var ax = [], bx = [];
+                        a.timestamp.replace(/(\d+)|(\D+)/g, function (_, $1, $2) { ax.push([$1 || Infinity, $2 || ""]) });
+                        b.timestamp.replace(/(\d+)|(\D+)/g, function (_, $1, $2) { bx.push([$1 || Infinity, $2 || ""]) });
+
+                        while (ax.length && bx.length) {
+                            var an = ax.shift();
+                            var bn = bx.shift();
+                            var nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1]);
+                            if (nn) return nn;
+                        }
+
+                        return ax.length - bx.length;
+                    })
+
+                    let outputValue = dataArray.reduce((op, cur) => {
+                        if (op[cur.timestamp]) {
+                            op[cur.timestamp].val += cur.val;
+                            op[cur.timestamp].count++;
+                        } else {
+                            op[cur.timestamp] = cur
+                            op[cur.timestamp].count = 1;
+                        }
+                        return op;
+                    }, {})
+
+                    let myValues = Object.values(outputValue).map(e => {
+                        return {
+                            val: e.val / e.count
+                        }
+                    })
 
                     const timeS = dataArray.map(x => x.timestamp)
-                    const valuesNeeded = dataArray.map(x => x.val)
-                   
+                    const valuesNeeded = myValues.map(x => x.val)
 
                     commit('setTimestamps', timeS.unique())
                     commit('setUserData', valuesNeeded)
-                    console.log("timestamps: " + timeS)
-                    console.log("values:  " + valuesNeeded)
+
                     if (getters.timestamps.length > 0 && getters.userData.length > 0) {
                         commit('setRender', true)
-                        console.log("rendering", getters.render)
                     }
                     else {
                         commit('setRender', false)
@@ -415,29 +476,28 @@ const moduleC = {
         yearPointer: null,
         renderForYear: false
     },
-    mutations:{
-        setXAxisPerYear(state, payload){
+    mutations: {
+        setXAxisPerYear(state, payload) {
             state.xAxisPerYear = payload
         },
-        setYAxisPerYear(state, payload){
+        setYAxisPerYear(state, payload) {
             state.yAxisPerYear = payload
         },
-        setYearPointer(state, payload){
+        setYearPointer(state, payload) {
             state.yearPointer = payload
         },
-        setRenderForYear(state, payload){
+        setRenderForYear(state, payload) {
             state.renderForYear = payload
         }
     },
-    actions:{
-        activateYearPointer({commit}){
+    actions: {
+        activateYearPointer({ commit }) {
             var today = new Date()
             var myYear = today.getFullYear()
 
-       // var theMonth = String(today.getMonth() + 1).padStart(2, '0') 
             commit('setYearPointer', myYear)
         },
-        getYearData({commit, getters}){
+        getYearData({ commit, getters }) {
             console.log("per YEAR")
             var yearToWorkWith = getters.yearPointer
             commit('setLoading', true)
@@ -454,9 +514,7 @@ const moduleC = {
                         //month level in firebase
                         var deeperContent = data.child('Values').child(yearToWorkWith).forEach(function (childSnapshot) {
                             var month = childSnapshot.key
-                            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-                            //var number = months.indexOf(theMonth) + 1;
-                            console.log("check 1   "+ month)
+                           // console.log("check 1   " + month)
                             //under the month node
                             var evenDeeperContent = data.child('Values').child(yearToWorkWith).child(month).forEach(function (childSnapshot) {
 
@@ -466,17 +524,22 @@ const moduleC = {
                                     var timeStp = childSnapshot.key
                                     data.child('Values').child(yearToWorkWith).child(month).child(day).child(timeStp).forEach(function (childSnapshot) {
                                         var childData = childSnapshot.val();
-                                        dataArray.push({
-                                            moment: day + "/" + month + "/" + yearToWorkWith,
-                                            //timestamp: timeStp,
-                                            val: childData
-                                        })
+                                        var toNum = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+                                        for (var i = 0; i < toNum.length; i++) {
+                                            if (toNum[i] == month) {
+                                                var numMonth = toNum.indexOf(month) + 1
+                                                dataArray.push({
+                                                    moment: day + "/" + numMonth + "/" + yearToWorkWith,
+                                                    //timestamp: timeStp,
+                                                    val: childData
+                                                })
+                                            }
+                                        }
                                     })
 
-                                })
+                                });
 
-                            });
-
+                            })
                         });
                     })
                     /* this method can be used to define the elements that will be used on the x axis
@@ -488,12 +551,6 @@ const moduleC = {
                             return self.indexOf(value) === index;
                         });
                     };
-                    const days = dataArray.map(x => x.moment)
-                    //const timeS = dataArray.map(x => x.timestamp)
-                    // const valuesNeeded = dataArray.map(x => x.val)
-
-                    commit('setXAxisPerYear', days.reverse().unique())
-                    // commit('setTimestamps', timeS)
 
                     /* put the average value for each day
                     ** array to share : final[] instead of dataArray
@@ -511,19 +568,33 @@ const moduleC = {
 
                     let final = Object.values(output).map(e => {
                         return {
-                            //moment: e.moment,
+                            moment: e.moment,
                             val: e.val / e.count
                         }
                     })
+                    for (var i = 0; i < final.length; i++) {
+                        var day = final[i].moment.substring(0, final[i].moment.indexOf("/"))
+                        var month = (final[i].moment.substring(final[i].moment.indexOf("/"), final[i].moment.lastIndexOf("/")).replace("/", "")) - 1
+                        var year = final[i].moment.substring(final[i].moment.lastIndexOf("/")).replace("/", "")
+                        var myDate = new Date(year, month, day)
+                        final[i].moment = myDate
+                    }
+                    var date_sort = function (date1, date2) {
+                        return date1.moment - date2.moment
+                    };
 
-                    /* console.log(final)
-                     final.forEach(function(y){
-                       console.log("day: "+y.moment+"  value: "+y.val)
-                     })*/
+                    final.sort(date_sort)
+                    for (var i = 0; i < final.length; i++) {
+                        final[i].moment = final[i].moment.toString().substring(0, 15)
+                        //console.log(final[i].moment)
+                    }
+
+                    const days = final.map(x => x.moment)
                     const valuesNeeded = final.map(e => e.val);
 
+                    commit('setXAxisPerYear', days.unique())
+                    commit('setYAxisPerYear', valuesNeeded)
 
-                    commit('setYAxisPerYear', valuesNeeded.reverse())
                     commit('setLoading', false)
                     if (getters.xAxisPerYear.length > 0 && getters.yAxisPerYear.length > 0) {
                         commit('setRenderForYear', true)
@@ -531,18 +602,19 @@ const moduleC = {
                     else {
                         commit('setRenderForYear', false)
                     }
+
                 })
         }
     },
-    
-    getters:{
+
+    getters: {
         xAxisPerYear(state) {
             return state.xAxisPerYear
         },
         yAxisPerYear(state) {
             return state.yAxisPerYear
         },
-        yearPointer(state){
+        yearPointer(state) {
             return state.yearPointer
         },
         renderForYear(state) {

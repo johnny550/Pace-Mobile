@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-layout row>
+    <v-layout row v-if="this.$store.getters.emailVerified">
       <h2>{{message}}</h2>
       <v-flex>
         <v-card>
@@ -56,25 +56,62 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout row></v-layout>
+    <v-layout row justify-center v-if="!this.$store.getters.emailVerified" class="grey darken-4">
+      <img :src="activeGIF" />
+      <v-dialog v-model="dialog" light hide-overlay persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline">Want to be secure?</v-card-title>
+          <v-card-text>A verification notice has been sent toward your email address</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" flat @click="dialog = false">OK</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
+import * as firebase from "firebase";
+var gifs = [
+  "https://cdn.dribbble.com/users/106600/screenshots/2150230/dribbble-loader-green.gif",
+  "https://i.gifer.com/4RNk.gif",
+  "https://media.giphy.com/media/xTk9ZvMnbIiIew7IpW/giphy.gif",
+  "https://media.giphy.com/media/IwSG1QKOwDjQk/giphy.gif"
+];
 export default {
   data() {
     return {
-      bottomNav: "recent"
+      bottomNav: "recent",
+      dialog: true,
+      gifs,
+      activeGIF: null
     };
+  },
+  created() {
+    if (firebase.auth().currentUser.emailVerified) {
+      this.$store.commit("setEmailVerified", true);
+    } else {
+      //e.preventDefault();
+      let index = Math.floor(Math.random() * 3 + 1);
+      this.activeGIF = this.gifs[index];
+      console.log("created  " + this.activeGIF);
+    }
   },
   methods: {
     exportData() {
       let Canvas = document.getElementById("line-chart");
       var imgData = Canvas.toDataURL("image/jpeg");
       var pdf = new jsPDF("landscape");
-       pdf.setFontSize(22);
-      pdf.text(100,20,"User: "+this.$store.getters.email)
-      pdf.text(80, 40,"This data has been registered as abnormalities on "+this.$store.getters.datePointer)
+      pdf.setFontSize(22);
+      pdf.text(100, 20, "User: " + this.$store.getters.email);
+      pdf.text(
+        80,
+        40,
+        "This data has been registered as abnormalities on " +
+          this.$store.getters.datePointer
+      );
       pdf.addImage(imgData, "JPEG", 5, 50, 300, 140, "al", "NONE", 0);
       pdf.save("Data sum up _Day_.pdf");
     },
@@ -117,7 +154,7 @@ export default {
       var curr_year = va.getFullYear();
       var myday = curr_date + "/" + curr_month + "/" + curr_year;
       this.$store.commit("setDatePointer", myday);
-      console.log("after plus" + this.$store.getters.datePointer);
+      //console.log("after plus" + this.$store.getters.datePointer);
       this.$store.commit("setRender", false);
       this.$store.dispatch("dataPerDay");
     }
