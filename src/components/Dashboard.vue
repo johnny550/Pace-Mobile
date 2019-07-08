@@ -28,7 +28,7 @@
             </v-card>
 
             <v-container>
-              <v-layout row align-center>
+              <v-layout row>
                 <div class="text-xs-center">
                   <h1>Date:</h1>
                   <h2>{{eldia}}</h2>
@@ -40,6 +40,8 @@
                     <v-icon dark>add</v-icon>
                   </v-btn>
                 </div>
+              </v-layout>
+              <v-layout row align-center>
                 <div
                   class="Chart"
                   style="position: relative; height:60vh; width:80vw"
@@ -57,8 +59,10 @@
       </v-flex>
     </v-layout>
     <v-layout row justify-center v-if="!this.$store.getters.emailVerified" class="grey darken-4">
+      <!-- <v-flex xs12 sm6 offset-sm3 justify-center> -->
       <img :src="activeGIF" />
-      <v-dialog v-model="dialog" light hide-overlay persistent max-width="290">
+
+      <v-dialog v-model="dialog" light hide-overlay persistent max-width="50%">
         <v-card>
           <v-card-title class="headline">Want to be secure?</v-card-title>
           <v-card-text>A verification notice has been sent toward your email address</v-card-text>
@@ -68,6 +72,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <!-- </v-flex> -->
     </v-layout>
   </v-container>
 </template>
