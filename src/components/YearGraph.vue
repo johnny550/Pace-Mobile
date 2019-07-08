@@ -39,6 +39,8 @@
                     <v-icon dark>add</v-icon>
                   </v-btn>
                 </div>
+              </v-layout>
+              <v-layout row align-center>
                 <div
                   class="Chart"
                   style="position: relative; height:60vh; width:80vw"
@@ -86,9 +88,14 @@ export default {
       let Canvas = document.getElementById("line-chart");
       var imgData = Canvas.toDataURL("image/jpeg");
       var pdf = new jsPDF("landscape");
-       pdf.setFontSize(22);
-      pdf.text(100,20,"User: "+this.$store.getters.email)
-      pdf.text(80, 40,"This data has been registered as abnormalities on "+this.$store.getters.yearPointer)
+      pdf.setFontSize(22);
+      pdf.text(100, 20, "User: " + this.$store.getters.email);
+      pdf.text(
+        80,
+        40,
+        "This data has been registered as abnormalities on " +
+          this.$store.getters.yearPointer
+      );
       pdf.addImage(imgData, "JPEG", 5, 50, 300, 140, "al", "NONE", 0);
       pdf.save("Data sum up _Year_.pdf");
     },

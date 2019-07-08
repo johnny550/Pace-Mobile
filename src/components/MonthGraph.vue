@@ -45,6 +45,8 @@
                     <v-icon dark>add</v-icon>
                   </v-btn>
                 </div>
+              </v-layout>
+              <v-layout row align-center>
                 <div
                   class="Chart"
                   style="position: relative; height:60vh; width:80vw"
@@ -78,8 +80,13 @@ export default {
       var pdf = new jsPDF("landscape");
       //x then y
       pdf.setFontSize(22);
-      pdf.text(100,20,"User: "+this.$store.getters.email)
-      pdf.text(80, 40,"This data has been registered as abnormalities in "+this.$store.getters.monthPointer)
+      pdf.text(100, 20, "User: " + this.$store.getters.email);
+      pdf.text(
+        80,
+        40,
+        "This data has been registered as abnormalities in " +
+          this.$store.getters.monthPointer
+      );
       pdf.addImage(imgData, "JPEG", 5, 50, 300, 140, "al", "NONE", 0);
       pdf.save("Data sum up _Month_.pdf");
     },
