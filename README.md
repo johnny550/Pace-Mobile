@@ -1,6 +1,7 @@
 # pace
 
 Crawls over a data set stored on Google's Firbase and renders it through nice and intuitive graphs.
+The data can be vizualized by year, month, or even day
 
 ## Build Setup
 
