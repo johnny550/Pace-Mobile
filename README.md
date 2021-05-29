@@ -1,6 +1,6 @@
 # pace
 
-> My research
+Crawls over a data set stored on Google's Firbase and renders it through nice and intuitive graphs.
 
 ## Build Setup
 
